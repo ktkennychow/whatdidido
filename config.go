@@ -2,10 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/spf13/cobra"
 )
 
 type Config struct {
@@ -69,14 +70,9 @@ func saveConfig(config Config) error {
 	return os.WriteFile(configPath, data, 0644)
 }
 
-func handleConfigCommand() {
-	var authorFlag string
-	var sinceFlag string
-	flag.StringVar(&authorFlag, "author", "", "Git author name (e.g., \"johndoe\")")
-	flag.StringVar(&authorFlag, "a", "", "Git author name (shorthand for --author)")
-	flag.StringVar(&sinceFlag, "since", "", "Time specification (e.g., \"1 day ago\", \"midnight\")")
-	flag.StringVar(&sinceFlag, "s", "", "Time specification (shorthand for --since)")
-	flag.Parse()
+func handleConfigCommand(cmd *cobra.Command) {
+	authorFlag, _ := cmd.Flags().GetString("author")
+	sinceFlag, _ := cmd.Flags().GetString("since")
 
 	if authorFlag == "" && sinceFlag == "" {
 		// Show current config
