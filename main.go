@@ -16,9 +16,21 @@ func main() {
 			return
 		}
 		if arg == "config" {
+			// Shift args to remove "config"
+			os.Args = append(os.Args[:1], os.Args[2:]...)
 			handleConfigCommand()
 			return
 		}
+		if arg == "check" {
+			// Shift args to remove "check"
+			os.Args = append(os.Args[:1], os.Args[2:]...)
+		} else {
+			showHelp()
+			return
+		}
+	} else {
+		showHelp()
+		return
 	}
 
 	// Parse flags
@@ -41,15 +53,6 @@ func main() {
 	}
 	if sinceFlag != "" {
 		since = sinceFlag
-	}
-
-	// Handle positional arguments (author and optionally since if not set via flags)
-	posArgs := flag.Args()
-	if len(posArgs) > 0 && authorFlag == "" {
-		author = posArgs[0]
-	}
-	if len(posArgs) > 1 && sinceFlag == "" {
-		since = posArgs[1]
 	}
 
 	args := []string{"log",

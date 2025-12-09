@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -69,7 +70,15 @@ func saveConfig(config Config) error {
 }
 
 func handleConfigCommand() {
-	if len(os.Args) == 2 {
+	var authorFlag string
+	var sinceFlag string
+	flag.StringVar(&authorFlag, "author", "", "Git author name (e.g., \"johndoe\")")
+	flag.StringVar(&authorFlag, "a", "", "Git author name (shorthand for --author)")
+	flag.StringVar(&sinceFlag, "since", "", "Time specification (e.g., \"1 day ago\", \"midnight\")")
+	flag.StringVar(&sinceFlag, "s", "", "Time specification (shorthand for --since)")
+	flag.Parse()
+
+	if authorFlag == "" && sinceFlag == "" {
 		// Show current config
 		config := loadConfig()
 		fmt.Printf("Author: %s\n", config.Author)
@@ -77,36 +86,21 @@ func handleConfigCommand() {
 		return
 	}
 
-	if len(os.Args) < 4 {
-		fmt.Println("Usage:")
-		fmt.Println("  whatdidido config                    - Show current config")
-		fmt.Println("  whatdidido config author <name>      - Set author")
-		fmt.Println("  whatdidido config since <time>        - Set since")
-		os.Exit(1)
-	}
-
 	config := loadConfig()
-	key := os.Args[2]
-	value := os.Args[3]
-
-	switch key {
-	case "author":
-		config.Author = value
+	if authorFlag != "" {
+		config.Author = authorFlag
 		if err := saveConfig(config); err != nil {
 			fmt.Fprintf(os.Stderr, "Error saving config: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Author set to: %s\n", value)
-	case "since":
-		config.Since = value
+		fmt.Printf("Author set to: %s\n", authorFlag)
+	}
+	if sinceFlag != "" {
+		config.Since = sinceFlag
 		if err := saveConfig(config); err != nil {
 			fmt.Fprintf(os.Stderr, "Error saving config: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("Since set to: %s\n", value)
-	default:
-		fmt.Fprintf(os.Stderr, "Unknown config key: %s\n", key)
-		fmt.Println("Valid keys: author, since")
-		os.Exit(1)
+		fmt.Printf("Since set to: %s\n", sinceFlag)
 	}
 }

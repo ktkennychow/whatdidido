@@ -1,6 +1,7 @@
 # whatdidido
 
-A simple CLI tool to show your git commits since midnight.
+A simple CLI tool to show you easy to read git commits history so you can tell your manager you are not slacking.
+Or you are just to lazy to memorize git flags.
 
 ## Installation
 
@@ -17,40 +18,41 @@ go build -o whatdidido
 ## Usage
 
 ```bash
-whatdidido [author] [since]
-whatdidido config [key] [value]
+whatdidido check [--author=<name>] [--since=<time>]
+whatdidido config [--author=<name>] [--since=<time>]
 ```
+
+### Flags
+
+- `--author, -a`  Git author name (e.g., "johndoe")
+- `--since, -s`   Time specification (e.g., "1 day ago", "midnight")
 
 ### Running git log
 
-- `whatdidido` - Uses config defaults (or hardcoded defaults: `--author=ktkennychow --since=midnight`)
-- `whatdidido <author>` - Uses provided author, config/default since
-- `whatdidido <author> <since>` - Uses both provided values (overrides config)
+Use the `check` command with optional flags to view commits.
 
 Examples:
 
 ```bash
-whatdidido
-whatdidido johndoe
-whatdidido johndoe "1 day ago"
+whatdidido check
+whatdidido check --author johndoe
+whatdidido check -a johndoe --since "1 day ago"
+whatdidido check --since "1 day ago"
+whatdidido check -s "1 day ago"
 ```
 
 ### Configuration
 
 Persistent configuration is stored in `~/.config/whatdidido/config.json`.
 
-```bash
-whatdidido config                    # Show current config
-whatdidido config author <name>     # Set author
-whatdidido config since <time>      # Set since
-```
+Use the `config` command with flags to set or view configuration.
 
 Examples:
 
 ```bash
-whatdidido config author johndoe
-whatdidido config since "1 day ago"
-whatdidido config                    # Shows: Author: johndoe, Since: 1 day ago
+whatdidido config                    # Show current config
+whatdidido config --author johndoe  # Set author
+whatdidido config --since "1 day ago"  # Set since
 ```
 
 This runs: `git log --since=<since> --author=<author> --no-merges --pretty=format:"%s"`
