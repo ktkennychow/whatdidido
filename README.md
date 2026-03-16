@@ -1,7 +1,7 @@
 # whatdidido
 
 A simple CLI tool to show you easy to read git commits history so you can tell your manager you are not slacking.
-Or you are just to lazy to memorize git flags.
+Or you are just too lazy to memorize git flags.
 
 ## Installation
 
@@ -56,3 +56,24 @@ whatdidido config --since "1 day ago"  # Set since
 ```
 
 This runs: `git log --since=<since> --author=<author> --no-merges --pretty=format:"%s"`
+
+## Testing
+
+Run the test suite:
+
+```bash
+go test
+```
+
+Or run the comprehensive test script:
+
+```bash
+./test.sh
+```
+
+The test suite covers:
+
+- Configuration loading and saving
+- Flag parsing and validation
+- Edge cases like empty flags
+- Error handling

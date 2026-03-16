@@ -11,11 +11,15 @@ import (
 func handleCheckCommand(cmd *cobra.Command) {
 	authorFlag, _ := cmd.Flags().GetString("author")
 	sinceFlag, _ := cmd.Flags().GetString("since")
+	showMergesFlagStr, _ := cmd.Flags().GetString("show-merges")
+	showDateFlagStr, _ := cmd.Flags().GetString("show-date")
 
 	// Load config as defaults
 	config := loadConfig()
 	author := config.Author
 	since := config.Since
+	showMerges := config.ShowMerges
+	showDate := config.ShowDate
 
 	// Override with flags if provided
 	if authorFlag != "" {
@@ -24,11 +28,31 @@ func handleCheckCommand(cmd *cobra.Command) {
 	if sinceFlag != "" {
 		since = sinceFlag
 	}
+	if cmd.Flags().Changed("show-merges") {
+		showMerges = showMergesFlagStr == "true"
+	}
+	if cmd.Flags().Changed("show-date") {
+		showDate = showDateFlagStr == "true"
+	}
+
+	var prettyFormat string
+	if showDate {
+		prettyFormat = `--pretty=format:%ad %s`
+	} else {
+		prettyFormat = `--pretty=format:%s`
+	}
 
 	args := []string{"log",
 		fmt.Sprintf("--since=%s", since),
-		"--no-merges",
-		`--pretty=format:%s`,
+		prettyFormat,
+	}
+
+	if showDate {
+		args = append(args, `--date=format:%Y-%m-%d`)
+	}
+
+	if !showMerges {
+		args = append(args, "--no-merges")
 	}
 
 	// Only add --author flag if author is not empty

@@ -10,8 +10,10 @@ import (
 )
 
 type Config struct {
-	Author string `json:"author"`
-	Since  string `json:"since"`
+	Author     string `json:"author"`
+	Since      string `json:"since"`
+	ShowMerges bool   `json:"show-merges"`
+	ShowDate   bool   `json:"show-date"`
 }
 
 func getConfigPath() (string, error) {
@@ -28,21 +30,23 @@ func getConfigPath() (string, error) {
 
 func loadConfig() Config {
 	defaultAuthor := getGitUserName()
-	defaultSince := "midnight"
+	defaultSince := "1 week ago"
+	defaultShowMerges := false
+	defaultShowDate := true
 
 	configPath, err := getConfigPath()
 	if err != nil {
-		return Config{Author: defaultAuthor, Since: defaultSince}
+		return Config{Author: defaultAuthor, Since: defaultSince, ShowMerges: defaultShowMerges, ShowDate: defaultShowDate}
 	}
 
 	data, err := os.ReadFile(configPath)
 	if err != nil {
-		return Config{Author: defaultAuthor, Since: defaultSince}
+		return Config{Author: defaultAuthor, Since: defaultSince, ShowMerges: defaultShowMerges, ShowDate: defaultShowDate}
 	}
 
 	var config Config
 	if err := json.Unmarshal(data, &config); err != nil {
-		return Config{Author: defaultAuthor, Since: defaultSince}
+		return Config{Author: defaultAuthor, Since: defaultSince, ShowMerges: defaultShowMerges, ShowDate: defaultShowDate}
 	}
 
 	// Ensure defaults if fields are empty
@@ -52,6 +56,8 @@ func loadConfig() Config {
 	if config.Since == "" {
 		config.Since = defaultSince
 	}
+	// ShowMerges defaults to false, no need to set
+	// ShowDate defaults to true for new configs, but respect saved value
 
 	return config
 }
@@ -71,14 +77,30 @@ func saveConfig(config Config) error {
 }
 
 func handleConfigCommand(cmd *cobra.Command) {
-	authorFlag, _ := cmd.Flags().GetString("author")
-	sinceFlag, _ := cmd.Flags().GetString("since")
+	authorFlag, err := cmd.Flags().GetString("author")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting author flag: %v\n", err)
+		os.Exit(1)
+	}
+	sinceFlag, err := cmd.Flags().GetString("since")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting since flag: %v\n", err)
+		os.Exit(1)
+	}
+	showMergesFlagStr, err := cmd.Flags().GetString("show-merges")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting show merges flag: %v\n", err)
+		os.Exit(1)
+	}
 
-	if authorFlag == "" && sinceFlag == "" {
+	// check if flag is present
+	if !cmd.Flags().Changed("author") && !cmd.Flags().Changed("since") && !cmd.Flags().Changed("show-merges") && !cmd.Flags().Changed("show-date") {
 		// Show current config
 		config := loadConfig()
 		fmt.Printf("Author: %s\n", config.Author)
 		fmt.Printf("Since:  %s\n", config.Since)
+		fmt.Printf("Show Merges: %t\n", config.ShowMerges)
+		fmt.Printf("Show Date: %t\n", config.ShowDate)
 		return
 	}
 
@@ -98,5 +120,25 @@ func handleConfigCommand(cmd *cobra.Command) {
 			os.Exit(1)
 		}
 		fmt.Printf("Since set to: %s\n", sinceFlag)
+	}
+	if cmd.Flags().Changed("show-merges") {
+		showMergesFlag := showMergesFlagStr == "true"
+		config.ShowMerges = showMergesFlag
+		if err := saveConfig(config); err != nil {
+			fmt.Fprintf(os.Stderr, "Error saving config: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Show Merges set to: %t\n", showMergesFlag)
+	}
+
+	showDateFlagStr, _ := cmd.Flags().GetString("show-date")
+	if cmd.Flags().Changed("show-date") {
+		showDateFlag := showDateFlagStr == "true"
+		config.ShowDate = showDateFlag
+		if err := saveConfig(config); err != nil {
+			fmt.Fprintf(os.Stderr, "Error saving config: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Printf("Show Date set to: %t\n", showDateFlag)
 	}
 }
