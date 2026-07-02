@@ -43,8 +43,8 @@ func TestLoadConfig_NoConfigFile(t *testing.T) {
 	if config.ShowMerges != false {
 		t.Error("Expected ShowMerges to default to false")
 	}
-	if config.ShowDate != true {
-		t.Error("Expected ShowDate to default to true")
+	if config.ShowDate != false {
+		t.Error("Expected ShowDate to default to false")
 	}
 }
 
@@ -250,7 +250,7 @@ func TestConfigWithShowDate(t *testing.T) {
 	}
 }
 
-// TestLoadConfig_DefaultShowDate tests that ShowDate defaults to true for new configs
+// TestLoadConfig_DefaultShowDate tests that ShowDate defaults to false for new configs
 func TestLoadConfig_DefaultShowDate(t *testing.T) {
 	// Remove any existing config file first
 	configPath, _ := getConfigPath()
@@ -258,9 +258,9 @@ func TestLoadConfig_DefaultShowDate(t *testing.T) {
 
 	config := loadConfig()
 
-	// ShowDate should default to true
-	if config.ShowDate != true {
-		t.Errorf("Expected ShowDate to default to true, got: %t", config.ShowDate)
+	// ShowDate should default to false
+	if config.ShowDate != false {
+		t.Errorf("Expected ShowDate to default to false, got: %t", config.ShowDate)
 	}
 }
 
@@ -334,7 +334,7 @@ func TestConfigDefaultValues(t *testing.T) {
 	if config.ShowMerges != false {
 		t.Error("Expected ShowMerges to default to false")
 	}
-	if config.ShowDate != true {
-		t.Error("Expected ShowDate to default to true")
+	if config.ShowDate != false {
+		t.Error("Expected ShowDate to default to false")
 	}
 }

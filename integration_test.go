@@ -230,7 +230,7 @@ func TestCheckCommand_WithShowDateFlag(t *testing.T) {
 	}
 	defer exec.Command("rm", "whatdidido-test").Run()
 
-	// Test with show-date=true (default)
+	// Test with show-date=true
 	cmd := exec.Command("./whatdidido-test", "check", "--show-date", "true")
 	_, err = cmd.Output()
 	if err != nil {

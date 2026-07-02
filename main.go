@@ -30,12 +30,12 @@ func init() {
 	checkCmd.Flags().StringP("author", "a", "", "Git author name (e.g., \"johndoe\")")
 	checkCmd.Flags().StringP("since", "s", "", "Time specification (e.g., \"1 day ago\", \"midnight\")")
 	checkCmd.Flags().StringP("show-merges", "m", "", "Show merge commits")
-	checkCmd.Flags().StringP("show-date", "d", "", "Show date before commit message (default: true)")
+	checkCmd.Flags().StringP("show-date", "d", "", "Show date before commit message (default: false)")
 
 	configCmd.Flags().StringP("author", "a", "", "Git author name (e.g., \"johndoe\")")
 	configCmd.Flags().StringP("since", "s", "", "Time specification (e.g., \"1 day ago\", \"midnight\")")
 	configCmd.Flags().StringP("show-merges", "m", "", "Show merge commits")
-	configCmd.Flags().StringP("show-date", "d", "", "Show date before commit message (default: true)")
+	configCmd.Flags().StringP("show-date", "d", "", "Show date before commit message (default: false)")
 
 	rootCmd.AddCommand(checkCmd)
 	rootCmd.AddCommand(configCmd)

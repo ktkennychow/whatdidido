@@ -32,7 +32,7 @@ func loadConfig() Config {
 	defaultAuthor := getGitUserName()
 	defaultSince := "1 week ago"
 	defaultShowMerges := false
-	defaultShowDate := true
+	defaultShowDate := false
 
 	configPath, err := getConfigPath()
 	if err != nil {
@@ -57,7 +57,7 @@ func loadConfig() Config {
 		config.Since = defaultSince
 	}
 	// ShowMerges defaults to false, no need to set
-	// ShowDate defaults to true for new configs, but respect saved value
+	// ShowDate defaults to false for new configs, but respect saved value
 
 	return config
 }
